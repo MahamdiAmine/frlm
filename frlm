@@ -9,25 +9,21 @@ BlueF='\e[1;34m'
 Red="\e[1;31m"
 Cclear="\e[0m"
 path=$(pwd)
+arg=$1
 clear
-
-fi
 ################################# < Super User Check > ################################
 if [ $EUID -ne 0 ]; then
-	echo -e "${Red}You don't have admin privilegies, execute the script as root.$Cclear"
+	echo -e "${Red}You don't have admin privilegies, please execute the script as root.$Cclear"
+	echo
 	exit 1
 fi
-
 ################################### < XTerm Checks > ###################################
 if [ ! "${DISPLAY:-}" ]; then
     echo -e "${CRed}The script should be exected inside a X (graphical) session.$CClr"
-    exit 2
+		echo
+		exit 2
 fi
 ########################################################################################
-arg=$1
-mode=$2
-interface=$3
-
 if [ " $arg " = ' init ' ] ; then
 echo
 echo -e $yellow"  [*] Initialisation ..."
@@ -58,35 +54,59 @@ sleep 1
 elif
 [ " $arg " = ' kick ' ] ; then
 	clear
-python /Scripts/kickthemout-master/kickthemout.py ;
-  clear
+python3 /home/mahamdi/LINUX/scripts/kickthemout/kickthemout.py
 elif
 [ " $arg " = ' kill ' ] ; then
-	echo -e $yellow "   starting wifijammer "
-python /root/Downloads/GITHUB/wifijammer/wifijammer.py
+	echo -e $yellow "   starting wifijammer ... "
+python /home/mahamdi/LINUX/scripts/wifijammer/wifijammer.py
 sleep 1
 elif
 [ " $arg " = ' chess ' ] ; then
-	pathSave=$(pwd)
- systemctl start nginx.service
- systemctl start mongodb.service
- cd /root/lila/
- sh /root/lila/bin/dev run > /dev/null &
- google-chrome l.org > /dev/null &
+ pathSave=$(pwd)
+ cd /home/mahamdi/lichess/lila/
+ sudo systemctl start nginx.service
+ sudo systemctl start mongodb.service
+ sudo sh /home/mahamdi/lichess/lila/bin/dev run
+ #google-chrome l.org > /dev/null &
 	sleep 1
-	cd pathSave
+	#cd path
 elif
 [ " $arg " = ' open ' ] ; then
 	nautilus --browser $path
 elif
 [ " $arg " = ' fix ' ] ; then
-	 rm /var/lib/dpkg/lock
-	 dpkg --configure -a
-	 rm /var/lib/apt/lists/lock
-	 rm /var/cache/apt/archives/lock
+	echo -e $yellow "Are you sure ? remember last time "
+	 # rm /var/lib/dpkg/lock
+	 # dpkg --configure -a
+	 # rm /var/lib/apt/lists/lock
+	 # rm /var/cache/apt/archives/lock
  elif
  [ " $arg " = ' update ' ] ; then
  apt-get -y update && apt-get -y upgrade && apt-get -y dist-upgrade
+elif
+[ " $arg " = ' piano ' ] ; then
+cargo build --release > /dev/null &
+cd /home/mahamdi/piano-rs/
+./target/release/piano-rs > /dev/null &
+elif
+[ " $arg " = ' jmerise ' ] ; then
+java -jar /opt/JMerise/JMerise.jar > /dev/null &
+elif
+[ " $arg " = ' packet ' ] ; then
+cd /opt/PacketTracer71_64bit_linux/bin/
+./PacketTracer7   > /dev/null
+cd path
+elif
+[ " $arg " = ' proxyon ' ] ; then
+cat << "EOF" > /etc/apt/apt.conf
+Acquire::http::proxy "http://10.0.0.3:80/";
+Acquire::ftp::proxy "ftp:http://10.0.0.3:80/";
+Acquire::https::proxy "http://10.0.0.3:80/";
+EOF
+elif
+[ " $arg " = ' proxyoff ' ] ; then
+cat << "EOF" > /etc/apt/apt.conf
+EOF
 elif [ " $arg " = ' -h ' ] || [ " $arg " = ' --help ' ]; then
 		echo ""
 		echo "[option]"
@@ -108,6 +128,16 @@ elif [ " $arg " = ' -h ' ] || [ " $arg " = ' --help ' ]; then
 		echo " fix = Fix “Unable to lock the administration directory (/var/lib/dpkg/)“ "
 		echo ""
 		echo " update = update the system "
+		echo ""
+		echo " piano = open piano-rs "
+		echo ""
+		echo " jmerise "
+		echo ""
+		echo " packet :PacketTracer7 "
+		echo ""
+		echo " proxyon "
+		echo ""
+		echo " proxyoff "
 		echo ""
 		echo " -h = help "
 		echo ""
