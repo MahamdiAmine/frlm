@@ -9,6 +9,7 @@ BlueF='\e[1;34m'
 Red="\e[1;31m"
 Cclear="\e[0m"
 path=$(pwd)
+BUS=/sys/bus/usb/drivers_autoprobe
 arg=$1
 clear
 ################################# < Super User Check > ################################
@@ -32,6 +33,7 @@ service network-manager stop;
 macchanger -r wlan0 > /dev/null
 macchanger -r eth0 > /dev/null
 service network-manager start;
+echo 0 > $BUS
 echo
 echo -e $yellow"  [*] Done ."
 sleep 1
@@ -40,15 +42,15 @@ clear
 elif
 [ " $arg " = ' ghoston ' ] ; then
 echo -e $yellow "   Becaming ghost in the net ..."
-ghost on wlan0 ;
-ghost on eth0 ;
+	sh /home/mahamdi/LINUX/scripts/GhostInTheNet/GhostInTheNet.sh on wlan0 ;
+  sh /home/mahamdi/LINUX/scripts/GhostInTheNet/GhostInTheNet.sh on eth0 ;
 echo -e $yellow"  [*] Done ."
 sleep 1
 elif
 [ " $arg " = ' ghostoff ' ] ; then
 echo -e $yellow "   turning off the mode  ghost in the net ..."
-  ghost off wlan0 ;
-  ghost off eth0 ;
+  sh /home/mahamdi/LINUX/scripts/GhostInTheNet/GhostInTheNet.sh off wlan0 ;
+  sh /home/mahamdi/LINUX/scripts/GhostInTheNet/GhostInTheNet.sh off eth0 ;
 echo -e $yellow"  [*] Done ."
 sleep 1
 elif
@@ -62,40 +64,55 @@ python /home/mahamdi/LINUX/scripts/wifijammer/wifijammer.py
 sleep 1
 elif
 [ " $arg " = ' chess ' ] ; then
- pathSave=$(pwd)
- cd /home/mahamdi/lichess/lila/
- sudo systemctl start nginx.service
- sudo systemctl start mongodb.service
- sudo sh /home/mahamdi/lichess/lila/bin/dev run
- #google-chrome l.org > /dev/null &
+ cd /home/mahamdi/lila/
+ systemctl start nginx.service
+ systemctl start mongodb.service
+ echo -e $yellow"  [*] Done ."
+ sh ./bin/dev run  > /dev/null &
+ google-chrome l.org > /dev/null &
 	sleep 1
-	#cd path
+	cd path
 elif
 [ " $arg " = ' open ' ] ; then
 	nautilus --browser $path
 elif
 [ " $arg " = ' fix ' ] ; then
 	echo -e $yellow "Are you sure ? remember last time "
-	 # rm /var/lib/dpkg/lock
-	 # dpkg --configure -a
-	 # rm /var/lib/apt/lists/lock
-	 # rm /var/cache/apt/archives/lock
+	  rm /var/lib/dpkg/lock
+	  dpkg --configure -a
+	  rm /var/lib/apt/lists/lock
+	  rm /var/cache/apt/archives/lock
  elif
  [ " $arg " = ' update ' ] ; then
  apt-get -y update && apt-get -y upgrade && apt-get -y dist-upgrade
 elif
 [ " $arg " = ' piano ' ] ; then
-cargo build --release > /dev/null &
 cd /home/mahamdi/piano-rs/
+cargo build --release > /dev/null &
 ./target/release/piano-rs > /dev/null &
+cd path
 elif
 [ " $arg " = ' jmerise ' ] ; then
 java -jar /opt/JMerise/JMerise.jar > /dev/null &
 elif
 [ " $arg " = ' packet ' ] ; then
-cd /opt/PacketTracer71_64bit_linux/bin/
-./PacketTracer7   > /dev/null
+cd /opt/PacketTrace/bin/
+./PacketTracer7 > /dev/null &
 cd path
+elif
+[ " $arg " = ' anonyme ' ] ; then
+	python /home/mahamdi/LINUX/scripts/anonymeMail.py
+elif
+[ " $arg " = ' usb ' ] ; then
+echo
+echo -e $yellow '!!! USB OPENED FOR 10 SECONDS !!!'
+echo 1 > $BUS
+sleep 10
+echo 0 > $BUS
+clear
+echo
+echo -e $Red '!!! USB BLOCKED !!!'
+echo
 elif
 [ " $arg " = ' proxyon ' ] ; then
 cat << "EOF" > /etc/apt/apt.conf
@@ -138,6 +155,8 @@ elif [ " $arg " = ' -h ' ] || [ " $arg " = ' --help ' ]; then
 		echo " proxyon "
 		echo ""
 		echo " proxyoff "
+		echo ""
+		echo " anonyme :send an anonymous mail"
 		echo ""
 		echo " -h = help "
 		echo ""
