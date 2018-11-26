@@ -1,17 +1,33 @@
 #! /bin/bash
 
 #============================================================================================================
-#                 https://twitter.com/mahamdi.amine
+#           Twitter:      https://twitter.com/mahamdi.amine
+#           Github :      https://github.com/MahamdiAmine
+#           Website:      https://mahamdiamine.github.io/
 #============================================================================================================
 yellow='\e[1;33m'
 green='\e[0;34m'
 BlueF='\e[1;34m'
 Red="\e[1;31m"
 Cclear="\e[0m"
-path=$(pwd)
+dir=`pwd`
 BUS=/sys/bus/usb/drivers_autoprobe
 arg=$1
 clear
+#######################################################################################
+bar ()
+{
+	echo -n  Initialisation = =;
+	sleep 3 & while [ "$(ps a | awk '{print $1}' | grep $!)" ] ; do for X in '-' '\' '|' '/'; do echo -en "\b$X"; sleep 0.1; done; done
+  echo
+	echo
+BAR='█║║║║║║║║║║║║║║║║║║║║║║║║║║║║║║║║║║║║║║║║║║║║║║║║█'
+
+for i in {1..50}; do
+    echo -ne "\r             ${BAR:0:$i}"
+    sleep 0.04
+done
+}
 ################################# < Super User Check > ################################
 if [ $EUID -ne 0 ]; then
 	echo -e "${Red}You don't have admin privilegies, please execute the script as root.$Cclear"
@@ -27,13 +43,16 @@ fi
 ########################################################################################
 if [ " $arg " = ' init ' ] ; then
 echo
-echo -e $yellow"  [*] Initialisation ..."
+#echo -e $yellow"  [*] Initialisation ..."
 echo -e $BlueF""
 service network-manager stop;
 macchanger -r wlan0 > /dev/null
 macchanger -r eth0 > /dev/null
 service network-manager start;
 echo 0 > $BUS
+echo
+bar
+echo
 echo
 echo -e $yellow"  [*] Done ."
 sleep 1
@@ -42,8 +61,8 @@ clear
 elif
 [ " $arg " = ' ghoston ' ] ; then
 echo -e $yellow "   Becaming ghost in the net ..."
-	sh /home/mahamdi/LINUX/scripts/GhostInTheNet/GhostInTheNet.sh on wlan0 ;
-  sh /home/mahamdi/LINUX/scripts/GhostInTheNet/GhostInTheNet.sh on eth0 ;
+sudo	sh /home/mahamdi/LINUX/scripts/GhostInTheNet/GhostInTheNet.sh on wlan0 > /dev/null ;
+  sh /home/mahamdi/LINUX/scripts/GhostInTheNet/GhostInTheNet.sh on eth0 > /dev/null;
 echo -e $yellow"  [*] Done ."
 sleep 1
 elif
@@ -71,7 +90,7 @@ elif
  sh ./bin/dev run  > /dev/null &
  google-chrome l.org > /dev/null &
 	sleep 1
-	cd path
+	cd dir
 elif
 [ " $arg " = ' open ' ] ; then
 	nautilus --browser $path
@@ -90,7 +109,7 @@ elif
 cd /home/mahamdi/piano-rs/
 cargo build --release > /dev/null &
 ./target/release/piano-rs > /dev/null &
-cd path
+cd dir
 elif
 [ " $arg " = ' jmerise ' ] ; then
 java -jar /opt/JMerise/JMerise.jar > /dev/null &
@@ -98,17 +117,26 @@ elif
 [ " $arg " = ' packet ' ] ; then
 cd /opt/PacketTrace/bin/
 ./PacketTracer7 > /dev/null &
-cd path
+cd dir
 elif
 [ " $arg " = ' anonyme ' ] ; then
 	python /home/mahamdi/LINUX/scripts/anonymeMail.py
+elif
+[ " $arg " = ' temp ' ] ; then
+	watch sensors ;
+elif
+[ " $arg " = ' inlightme ' ] ; then
+	sudo echo 1 > /sys/devices/platform/sony-laptop/kbd_backlight ;
+elif
+[ " $arg " = ' darkme ' ] ; then
+	sudo echo -1 > /sys/devices/platform/sony-laptop/kbd_backlight ;
 elif
 [ " $arg " = ' usb ' ] ; then
 echo
 echo -e $yellow '!!! USB OPENED FOR 10 SECONDS !!!'
 echo 1 > $BUS
-sleep 10
-echo 0 > $BUS
+sleep 20
+echo 1 > $BUS
 clear
 echo
 echo -e $Red '!!! USB BLOCKED !!!'
@@ -157,6 +185,8 @@ elif [ " $arg " = ' -h ' ] || [ " $arg " = ' --help ' ]; then
 		echo " proxyoff "
 		echo ""
 		echo " anonyme :send an anonymous mail"
+		echo ""
+		echo " temp :watch the temp in C° "
 		echo ""
 		echo " -h = help "
 		echo ""
