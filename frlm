@@ -128,6 +128,9 @@ elif
 [ " $arg " = ' inlightme ' ] ; then
 	sudo echo 1 > /sys/devices/platform/sony-laptop/kbd_backlight ;
 elif
+[ " $arg " = ' vega ' ] ; then
+	sudo /home/mahamdi/LINUX/chess/vegalinux64/Vega8 &
+elif
 [ " $arg " = ' darkme ' ] ; then
 	sudo echo -1 > /sys/devices/platform/sony-laptop/kbd_backlight ;
 elif
@@ -187,6 +190,8 @@ elif [ " $arg " = ' -h ' ] || [ " $arg " = ' --help ' ]; then
 		echo " anonyme :send an anonymous mail"
 		echo ""
 		echo " temp :watch the temp in C° "
+		echo ""
+		echo " vega :Swiss Manager "
 		echo ""
 		echo " -h = help "
 		echo ""
