@@ -11,6 +11,8 @@ BlueF='\e[1;34m'
 Red="\e[1;31m"
 Cclear="\e[0m"
 dir=`pwd`
+lilaPath="/home/mahamdi/development/lila/"
+lilaCmd="/home/mahamdi/development/lila/bin/dev run"
 BUS=/sys/bus/usb/drivers_autoprobe
 arg=$1
 clear
@@ -29,8 +31,8 @@ for i in {1..50}; do
 done
 }
 ################################# < Super User Check > ################################
-if [ $EUID -ne 0 ]; then
-	echo -e "${Red}You don't have admin privilegies, please execute the script as root.$Cclear"
+if [ "$#" != "1" ]; then
+	echo -e "${Red}       illegal number of parameters.$Cclear"
 	echo
 	exit 1
 fi
@@ -75,7 +77,10 @@ sleep 1
 elif
 [ " $arg " = ' kick ' ] ; then
 	clear
-python3 /home/mahamdi/LINUX/scripts/kickthemout/kickthemout.py
+python3 /home/mahamdi/development/kickthemout/kickthemout.py
+elif
+[ " $arg " = ' ssh ' ] ; then
+	eval "$(ssh-agent -s)"
 elif
 [ " $arg " = ' kill ' ] ; then
 	echo -e $yellow "   starting wifijammer ... "
@@ -83,17 +88,19 @@ python /home/mahamdi/LINUX/scripts/wifijammer/wifijammer.py
 sleep 1
 elif
 [ " $arg " = ' chess ' ] ; then
- cd /home/mahamdi/lila/
- systemctl start nginx.service
- systemctl start mongodb.service
- echo -e $yellow"  [*] Done ."
- sh ./bin/dev run  > /dev/null &
- google-chrome l.org > /dev/null &
-	sleep 1
-	cd dir
+ #cd /home/mahamdi/lila/
+ sudo systemctl start nginx.service
+ echo -e $yellow"  [*] service nginx up "
+ sudo systemctl start mongodb.service
+ echo -e $yellow"  [*] service mongodb up "
+ #cd $lilaPath
+ #$lilaCmd > /dev/null &
+ #google-chrome 127.0.0.1:9663 > /dev/null &
+cd /home/mahamdi/development/lila/
 elif
 [ " $arg " = ' open ' ] ; then
-	nautilus --browser $path
+	dir=`pwd`
+	nautilus --browser $dir
 elif
 [ " $arg " = ' fix ' ] ; then
 	echo -e $yellow "Are you sure ? remember last time "
@@ -106,10 +113,9 @@ elif
  apt-get -y update && apt-get -y upgrade && apt-get -y dist-upgrade
 elif
 [ " $arg " = ' piano ' ] ; then
-cd /home/mahamdi/piano-rs/
-cargo build --release > /dev/null &
-./target/release/piano-rs > /dev/null &
-cd dir
+#sudo cargo build --release > /dev/null &
+/home/mahamdi/piano-rs/target/release/piano-rs > /dev/null
+#cd dir
 elif
 [ " $arg " = ' jmerise ' ] ; then
 java -jar /opt/JMerise/JMerise.jar > /dev/null &
@@ -131,6 +137,9 @@ elif
 [ " $arg " = ' vega ' ] ; then
 	sudo /home/mahamdi/LINUX/chess/vegalinux64/Vega8 &
 elif
+[ " $arg " = ' play ' ] ; then
+ term2048
+elif
 [ " $arg " = ' darkme ' ] ; then
 	sudo echo -1 > /sys/devices/platform/sony-laptop/kbd_backlight ;
 elif
@@ -145,6 +154,13 @@ echo
 echo -e $Red '!!! USB BLOCKED !!!'
 echo
 elif
+[ " $arg " = ' battery ' ] ; then
+upower -i `upower -e | grep 'BAT'`
+acpi -V
+elif
+[ " $arg " = ' frlm ' ] ; then
+sudo atom  /usr/local/bin/frlm
+elif
 [ " $arg " = ' proxyon ' ] ; then
 cat << "EOF" > /etc/apt/apt.conf
 Acquire::http::proxy "http://10.0.0.3:80/";
@@ -157,7 +173,7 @@ cat << "EOF" > /etc/apt/apt.conf
 EOF
 elif [ " $arg " = ' -h ' ] || [ " $arg " = ' --help ' ]; then
 		echo ""
-		echo "[option]"
+		echo "[options]"
 		echo ""
 		echo " init = Initialisation "
 		echo ""
@@ -194,6 +210,8 @@ elif [ " $arg " = ' -h ' ] || [ " $arg " = ' --help ' ]; then
 		echo " vega :Swiss Manager "
 		echo ""
 		echo " -h = help "
+		echo ""
+		echo " ssh  "
 		echo ""
 	   else
 		echo -e $green " use  frlm -h for help "
