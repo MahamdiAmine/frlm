@@ -1,41 +1,53 @@
 # frlm
 
- [options]
+ Usage :  sudo frlm args
 
- init = Initialisation 
+[ Args :]
 
- ghost on  
+ init = Initialisation , changing the MAC @ 
 
- ghost off 
+ ghoston = Becaming ghost in the networking   
 
- kick = kickthemout
+ ghostoff = Turn off ghoston mode  
 
- kill = wifijammer 
+ kick = Kick them out of the network  
 
- chess = start lichess in localhost 
+ kill = Disconnect all hosts from all access point in your range 
 
- open 
+ wifi = Start a Hotspot point
+
+ chess = Start lichess in localhost 
+
+ open-dir = Open working directory in nautilus 
+
+ open = Start google chrome with usual websites
 
  fix = Fix “Unable to lock the administration directory (/var/lib/dpkg/)“ 
 
- update = update the system 
+ update = Update the system 
 
- piano = open piano-rs 
+ piano = Open piano-rs in the terminal 
 
- jmerise 
+ jmerise = old stuffs 
 
- packet :PacketTracer7 
+ packet = Open PacketTracer7 (old stuffs) 
 
- proxyon 
+ proxyon = Use ESI's proxy in your Linux system 
 
- proxyoff 
+ proxyoff = Turn off the proxy 
 
- anonyme :send an anonymous mail
+ anonyme = Send an anonymous mail
 
- temp :watch the temp in C° 
+ temp = Watch the temp in C° 
 
- vega :Swiss Manager 
+ play = Play term2048 in the terminal
 
- -h = help 
+ vega =Swiss Manager tool for CHESS 
 
- ssh
+ usb = Open your USB ports (sec option) 
+
+ convert-dir = Convert all media files in directory 
+
+ edit = Edit this script in Atom 
+
+ ssh = start the SSH agent 
