@@ -14,7 +14,10 @@ dir=`pwd`
 lilaPath="/home/mahamdi/development/lila/"
 lilaCmd="/home/mahamdi/development/lila/bin/dev run"
 BUS=/sys/bus/usb/drivers_autoprobe
+USER=mahamdi
 arg=$1
+
+echo 0 > $BUS #protect usb access
 clear
 #######################################################################################
 bar ()
@@ -47,18 +50,19 @@ if [ " $arg " = ' init ' ] ; then
 echo
 #echo -e $yellow"  [*] Initialisation ..."
 echo -e $BlueF""
-service network-manager stop;
-macchanger -r wlan0 > /dev/null
-macchanger -r eth0 > /dev/null
-service network-manager start;
-echo 0 > $BUS
-echo
+sudo service network-manager stop;
+sudo ifconfig wlan0 down
+sudo macchanger -r wlan0 > /dev/null
+sudo macchanger -r eth0 > /dev/null
+sudo service network-manager start;
+sudo ifconfig wlan0 up
+echo -e $Cclear
 bar
 echo
 echo
 echo -e $yellow"  [*] Done ."
 sleep 1
-echo
+echo -e $Cclear
 clear
 elif
 [ " $arg " = ' ghoston ' ] ; then
@@ -76,31 +80,38 @@ echo -e $yellow"  [*] Done ."
 sleep 1
 elif
 [ " $arg " = ' kick ' ] ; then
-	clear
-python3 /home/mahamdi/development/kickthemout/kickthemout.py
+	python3 /home/mahamdi/development/kickthemout/kickthemout.py
 elif
 [ " $arg " = ' ssh ' ] ; then
 	eval "$(ssh-agent -s)"
 elif
+[ " $arg " = ' wifi ' ] ; then
+	nmcli dev wifi hotspot ifname wlan0 ssid ' Untrusted Network ' password "streetdog05"
+echo -e $yellow "     Done."
+elif
 [ " $arg " = ' kill ' ] ; then
 	echo -e $yellow "   starting wifijammer ... "
-python /home/mahamdi/LINUX/scripts/wifijammer/wifijammer.py
-sleep 1
+	python /home/mahamdi/LINUX/scripts/wifijammer/wifijammer.py
+	sleep 1
 elif
 [ " $arg " = ' chess ' ] ; then
+	sudo -u $USER /home/mahamdi/aminov-tools/lichess.sh
  #cd /home/mahamdi/lila/
- sudo systemctl start nginx.service
- echo -e $yellow"  [*] service nginx up "
- sudo systemctl start mongodb.service
- echo -e $yellow"  [*] service mongodb up "
+ # sudo systemctl start nginx.service
+ # echo -e $yellow"  [*] service nginx up "
+ # sudo systemctl start mongodb.service
+ # echo -e $yellow"  [*] service mongodb up "
  #cd $lilaPath
  #$lilaCmd > /dev/null &
  #google-chrome 127.0.0.1:9663 > /dev/null &
-cd /home/mahamdi/development/lila/
+# cd /home/mahamdi/development/lila/
+elif
+[ " $arg " = ' open-dir ' ] ; then
+	dir=`pwd`
+	sudo -u $USER nautilus --browser $dir &
 elif
 [ " $arg " = ' open ' ] ; then
-	dir=`pwd`
-	nautilus --browser $dir
+		sudo -u $USER /home/mahamdi/aminov-tools/open-sites.sh
 elif
 [ " $arg " = ' fix ' ] ; then
 	echo -e $yellow "Are you sure ? remember last time "
@@ -138,7 +149,7 @@ elif
 	sudo /home/mahamdi/LINUX/chess/vegalinux64/Vega8 &
 elif
 [ " $arg " = ' play ' ] ; then
- term2048
+ sudo -u $USER term2048
 elif
 [ " $arg " = ' darkme ' ] ; then
 	sudo echo -1 > /sys/devices/platform/sony-laptop/kbd_backlight ;
@@ -158,61 +169,98 @@ elif
 upower -i `upower -e | grep 'BAT'`
 acpi -V
 elif
-[ " $arg " = ' frlm ' ] ; then
-sudo atom  /usr/local/bin/frlm
+[ " $arg " = ' convert-dir ' ] ; then
+echo -e
+echo -e
+echo -e $yellow 'Convert a directory :'$Cclear
+echo -e
+read -p "Enter the full path: " fullpath
+read -p "Convert From: " from
+read -p "Convert To: " to
+echo -e "Please confirm :"
+echo -e
+echo -e " Converting all $from files to $to files in $fullpath directory ?"
+echo -e
+read -p "Continue? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
+sleep 1.5
+clear
+echo
+echo
+echo -e $green"   Converting .."$Cclear
+echo
+find $fullpath -type f -name *.$from -not -empty -print0 |
+	sudo -u $USER parallel -0 -j -1 ffmpeg -loglevel fatal -i {} {.}.$to
+echo -e $yellow "     Done."
+elif
+[ " $arg " = ' edit ' ] ; then
+	sudo atom  /usr/local/bin/frlm
 elif
 [ " $arg " = ' proxyon ' ] ; then
-cat << "EOF" > /etc/apt/apt.conf
-Acquire::http::proxy "http://10.0.0.3:80/";
-Acquire::ftp::proxy "ftp:http://10.0.0.3:80/";
-Acquire::https::proxy "http://10.0.0.3:80/";
-EOF
+echo -e $Red "You do not need this anymore "$Cclear
+# cat << "EOF" > /etc/apt/apt.conf
+# Acquire::http::proxy "http://10.0.0.3:80/";
+# Acquire::ftp::proxy "ftp:http://10.0.0.3:80/";
+# Acquire::https::proxy "http://10.0.0.3:80/";
+# EOF
 elif
 [ " $arg " = ' proxyoff ' ] ; then
-cat << "EOF" > /etc/apt/apt.conf
-EOF
+	echo -e $Red "You do not need this anymore "$Cclear
+# cat << "EOF" > /etc/apt/apt.conf
+# EOF
 elif [ " $arg " = ' -h ' ] || [ " $arg " = ' --help ' ]; then
 		echo ""
-		echo "[options]"
+	  echo -e $green" Usage :  sudo frlm args"$Cclear
 		echo ""
-		echo " init = Initialisation "
+		echo -e $yellow"[ Args :]"$Cclear
 		echo ""
-		echo " ghost on  "
+		echo " init = Initialisation , changing the MAC @ "
 		echo ""
-		echo " ghost off "
+		echo " ghoston = Becaming ghost in the networking   "
 		echo ""
-		echo " kick = kickthemout"
+		echo " ghostoff = Turn off ghoston mode  "
 		echo ""
-		echo " kill = wifijammer "
+		echo " kick = Kick them out of the network  "
 		echo ""
-		echo " chess = start lichess in localhost "
+		echo " kill = Disconnect all hosts from all access point in your range "
 		echo ""
-		echo " open "
+		echo " wifi = Start a Hotspot point"
+		echo ""
+		echo " chess = Start lichess in localhost "
+		echo ""
+		echo " open-dir = Open working directory in nautilus "
+		echo ""
+		echo " open = Start google chrome with usual websites"
 		echo ""
 		echo " fix = Fix “Unable to lock the administration directory (/var/lib/dpkg/)“ "
 		echo ""
-		echo " update = update the system "
+		echo " update = Update the system "
 		echo ""
-		echo " piano = open piano-rs "
+		echo " piano = Open piano-rs in the terminal "
 		echo ""
-		echo " jmerise "
+		echo " jmerise = old stuffs "
 		echo ""
-		echo " packet :PacketTracer7 "
+		echo " packet = Open PacketTracer7 (old stuffs) "
 		echo ""
-		echo " proxyon "
+		echo " proxyon = Use ESI's proxy in your Linux system "
 		echo ""
-		echo " proxyoff "
+		echo " proxyoff = Turn off the proxy "
 		echo ""
-		echo " anonyme :send an anonymous mail"
+		echo " anonyme = Send an anonymous mail"
 		echo ""
-		echo " temp :watch the temp in C° "
+		echo " temp = Watch the temp in C° "
 		echo ""
-		echo " vega :Swiss Manager "
+		echo " play = Play term2048 in the terminal"
 		echo ""
-		echo " -h = help "
+		echo " vega =Swiss Manager tool for CHESS "
 		echo ""
-		echo " ssh  "
+		echo " usb = Open your USB ports (sec option) "
 		echo ""
-	   else
-		echo -e $green " use  frlm -h for help "
+		echo " convert-dir = Convert all media files in directory "
+		echo ""
+		echo " edit = Edit this script in Atom "
+		echo ""
+		echo " ssh = start the SSH agent "
+		echo ""
+else
+	echo -e $green " use  frlm -h for help "
 fi
