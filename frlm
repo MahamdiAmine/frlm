@@ -169,6 +169,9 @@ elif
 upower -i `upower -e | grep 'BAT'`
 acpi -V
 elif
+[ " $arg " = ' limit ' ] ; then
+	sudo evillimiter;
+elif
 [ " $arg " = ' convert-dir ' ] ; then
 echo -e
 echo -e
@@ -222,6 +225,8 @@ elif [ " $arg " = ' -h ' ] || [ " $arg " = ' --help ' ]; then
 		echo " kick = Kick them out of the network  "
 		echo ""
 		echo " kill = Disconnect all hosts from all access point in your range "
+		echo ""
+		echo " limit = kick + kill + limit "
 		echo ""
 		echo " wifi = Start a Hotspot point"
 		echo ""
