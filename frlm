@@ -84,10 +84,40 @@ elif
 elif
 [ " $arg " = ' ssh ' ] ; then
 	eval "$(ssh-agent -s)"
-elif
-[ " $arg " = ' wifi ' ] ; then
+elif [ " $arg " = ' resetpassword ' ];then
+	echo -e
+	echo -e
+	echo -e $BlueF "	Resetting the root account password :"
+	echo -e $Cclear
+	echo -e
+	echo -e "	Boot into grub, select single user but do not press enter."
+	echo -e "	Press e to go into edit mode."
+	echo -e "	Scroll down to the kernel line you will boot from,"
+	echo -e "		it starts with \"linux /boot/vmlinuz-…….\""
+	echo -e "	Scroll to the end of that line and press space key once "
+	echo -e "		and type init=/bin/bash"
+	echo -e "	Press Ctrl X to boot"
+	echo -e "	mount -rw -o remount /"
+	echo -e "	passwd"
+	echo -e
+	echo -e
+	echo -e $yellow "	Done."
+elif [ " $arg " = ' wifi ' ] ; then
 	nmcli dev wifi hotspot ifname wlan0 ssid ' Untrusted Network ' password "streetdog05"
+	echo -e $Cclear
+	echo -e
+	echo -e
+	echo -e
+	echo -e $yellow "Network SSID : Untrusted Network"
+	echo -e $yellow "Network password : streetdog05"
+	echo -e $Cclear
+	echo -e
+	echo -e
+	echo -e
 echo -e $yellow "     Done."
+elif
+[ " $arg " = ' ftp ' ] ; then
+	python3 -m http.server
 elif
 [ " $arg " = ' kill ' ] ; then
 	echo -e $yellow "   starting wifijammer ... "
@@ -256,7 +286,9 @@ elif [ " $arg " = ' -h ' ] || [ " $arg " = ' --help ' ]; then
 		echo ""
 		echo " play = Play term2048 in the terminal"
 		echo ""
-		echo " vega =Swiss Manager tool for CHESS "
+		echo " vega = Swiss Manager tool for CHESS "
+		echo ""
+		echo " ftp = Create FTP server "
 		echo ""
 		echo " usb = Open your USB ports (sec option) "
 		echo ""
@@ -269,3 +301,7 @@ elif [ " $arg " = ' -h ' ] || [ " $arg " = ' --help ' ]; then
 else
 	echo -e $green " use  frlm -h for help "
 fi
+
+
+#scp development/projectOS/Design/Logo/white.png user@192.168.0.253:/home/user
+#ssh -XC user@addres
